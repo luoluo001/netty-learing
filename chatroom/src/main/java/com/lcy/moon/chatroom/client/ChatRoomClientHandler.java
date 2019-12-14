@@ -1,4 +1,4 @@
-package com.lcy.ll.chatroom.client;
+package com.lcy.moon.chatroom.client;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

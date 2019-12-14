@@ -1,4 +1,4 @@
-package com.lcy.ll.chatroom.sever;
+package com.lcy.moon.chatroom.sever;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;

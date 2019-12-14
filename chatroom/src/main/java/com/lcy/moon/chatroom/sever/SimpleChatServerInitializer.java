@@ -1,4 +1,4 @@
-package com.lcy.ll.chatroom.sever;
+package com.lcy.moon.chatroom.sever;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
