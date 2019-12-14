@@ -44,9 +44,9 @@ public class CharRoomClent {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        String host = args[0];
-        String port = args[1];
-        new CharRoomClent(host,Integer.valueOf(port)).start();
+//        String host = args[0];
+//        String port = args[1];
+        new CharRoomClent("127.0.0.1",8080).start();
 
 
 
