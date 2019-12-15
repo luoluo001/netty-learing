@@ -31,6 +31,8 @@ public class ChatRoomServerHandler  extends SimpleChannelInboundHandler<String> 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, String s) throws Exception { // (4)
         Channel incoming = ctx.channel();
+        System.out.println("接收到的信息"+ s);
+
         for (Channel channel : channels) {
             if (channel != incoming){
                 channel.writeAndFlush("[" + incoming.remoteAddress() + "]" + s + "\n");
