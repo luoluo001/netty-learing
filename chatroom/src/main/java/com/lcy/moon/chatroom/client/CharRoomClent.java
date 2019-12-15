@@ -1,12 +1,11 @@
 package com.lcy.moon.chatroom.client;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelPipeline;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -26,7 +25,7 @@ public class CharRoomClent {
         this.port = port;
     }
 
-    public void start() throws InterruptedException {
+    public void start() throws Exception {
         EventLoopGroup group = new NioEventLoopGroup();//事件循环组 默认有nio和oio的实现循环
         try {
             Bootstrap bs = new Bootstrap();//启动项
@@ -45,7 +44,14 @@ public class CharRoomClent {
                     });
 
             ChannelFuture future = bs.connect().sync();//阻塞直到连接完成
-            future.channel().closeFuture().sync();//阻塞直到channel关闭
+
+            Channel channel = future.channel();
+            BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+            while(true){
+                channel.writeAndFlush(in.readLine() + "\r\n");
+            }
+
+         //   channel.closeFuture().sync();//阻塞直到channel关闭
         } catch (InterruptedException e) {
             e.printStackTrace();
         }finally {
@@ -53,7 +59,7 @@ public class CharRoomClent {
         }
     }
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws Exception {
 //        String host = args[0];
 //        String port = args[1];
         new CharRoomClent("127.0.0.1",8080).start();

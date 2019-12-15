@@ -30,6 +30,7 @@ public class ChatRoomServerHandler  extends SimpleChannelInboundHandler<String> 
     //每当从服务端读到客户端写入信息时，将信息转发给其他客户端的 Channel。
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, String s) throws Exception { // (4)
+        System.out.println("进入read 方法");
         Channel incoming = ctx.channel();
         for (Channel channel : channels) {
             if (channel != incoming){

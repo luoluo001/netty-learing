@@ -28,6 +28,7 @@ public class ChatRoomClientHandler extends SimpleChannelInboundHandler<String> {
         //首次连接之后发送的内容
         System.out.println("client连接上了");
         ctx.writeAndFlush("connetion server first");
+        System.out.println("success");
     }
 
     @Override
