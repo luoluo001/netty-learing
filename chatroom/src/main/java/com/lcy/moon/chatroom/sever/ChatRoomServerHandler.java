@@ -2,12 +2,14 @@ package com.lcy.moon.chatroom.sever;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.concurrent.GlobalEventExecutor;
+import org.omg.CORBA.OBJ_ADAPTER;
 
-public class ChatRoomServerHandler  extends SimpleChannelInboundHandler<String> {
+public class ChatRoomServerHandler  extends ChannelInboundHandlerAdapter{
      static ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
    //每当从服务端收到新的客户端连接时，客户端的 Channel 存入ChannelGroup列表中，并通知列表中的其他客户端 Channel
     @Override
@@ -29,7 +31,7 @@ public class ChatRoomServerHandler  extends SimpleChannelInboundHandler<String> 
     }
     //每当从服务端读到客户端写入信息时，将信息转发给其他客户端的 Channel。
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, String s) throws Exception { // (4)
+    public void channelRead(ChannelHandlerContext ctx, Object s) throws Exception { // (4)
         System.out.println("进入read 方法");
         Channel incoming = ctx.channel();
         for (Channel channel : channels) {
