@@ -95,3 +95,18 @@ Netty中的ChannelHandler主要由两种类型，ChannelInboundHandler和Channel
     void  handlerRemoved(ChannelHandlerContext ctx) throws Exception
     //事件处理方法是当出现 Throwable 对象才会被调用，即当 Netty 由于 IO 错误或者处理器在处理事件时抛出的异常时。
     void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
+
+
+# 看netty的疑问
+Channel是管道，我们知道，ChannelPipeline是什么鬼？
+ChannelPipeline是存放ChannelHandler链表结构的一个容器。Nio Channel是基于Select poll模型的，所以需要ChannelHandler来完成事件的回调处理，但是呢处理可能有多步，所以有了ChannelPipeline这个东东。
+
+Channel出站和进站的处理Handler的顺序，还有Channel直接写与ChannelHadnlerContext写的差异点 在handle上的处理流程需要做实验
+ChannelOutboundhandler 有read方法 读取更多数据，既然是出站数据为什么会有读取更多数据一说。
+我们那样写加入一个Channel发生了channel转换的话，会不会出现这个要传输，同时我那个也要写回的冲突。可以通过channel.isWritable来查看。
+
+另外ChannelOutboundHandler处理完了写出的话，最终的ChannelPromise状态是谁去填充的？这个后续可以看代码来完成。
+
+重要记录：
+ChannelHandler 的channelread，write方法要记得释放资源，因为人本身是用引用计数来处理池化的ByteBuf，如果不想处理的话可以用SimpleInboundHandlerAdapt 的channelRead0方法，因为这个类的channelread方法为您自动释放资源。关于池化请参照 第五章内容。（所以如果用了就不要存储任何指向消息的引用）。比如如果是ChannelOutBoundHandler的方法的write 消息**被消费后者被丢弃**并且没有传递给下一个ChannelOutBoundHandler,那么就有责任调用ReferenceCountUtil.release方法，如果消息叨叨了实际的传输层，那当消息被写入或者Channel被关闭时都会自动释放。（这个还没有太理解回头最好有案例补充）
+关于资源是否泄露可以通过 -Dio.netty.leakDetectionLevel=ADVANCED 来进行分析。默认采样1%的数据进行分析。
