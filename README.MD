@@ -1,4 +1,4 @@
-#netty api 解析
+# netty api 解析
 Netty的线程模型
 　　Netty的线程模型并不是一成不变的，它实际取决于用户的启动参数配置。Netty的多线程编程最佳实践如下
               
@@ -9,11 +9,11 @@ Netty的线程模型
          5:如果业务逻辑处理复杂，不要在NIO线程上完成，建议将解码后的POJO消息封装成Task，派发到业务线程池中由业务线程执行，以保证NIO线程尽快被释放，处理其他的I/O操作
 
 
-##EventLoopGroup
+## EventLoopGroup
 //创建两个NioEventLoopGroup，用于逻辑隔离NIO Acceptor和NIO I/O线程。
    EventLoopGroup bossGroup = new NioEventLoopGroup(); /
     EventLoopGroup workerGroup = new NioEventLoopGroup()
-##ChannelFuture
+## ChannelFuture
     ChannelFuture f = b.bind(port).sync(); /
     //ChannelFuture，用于在执行异步操作的时候使用。
 ChannelFuture提供了几种额外的方法，这些方法使得我们能够注册一个或者多个
