@@ -10,7 +10,6 @@
 ## Channel说明
 先说一下Channel有多种类型，banding服务端口的ServerChannel,LocalServerChannel(jvm内部交互的)，NioSocketChannel(Socket通信的)等等。那么Channel除了这里说的具体实现外，人家还有什么重要的属性呢。如下图所示：
 ![](img/channelhandler.png)
-<img src="https://github.com/luoluo001/netty-learing/tree/master/img/channelhandler.png" alt="pig" >
 每个Channel都持有一个Config(配置)，还有一个就是ChannelPipleLine（用于处理Channel内部传输的数据Handler链表）。
 
 ## ChannelHandler与ChannelPipeLine
