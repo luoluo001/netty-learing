@@ -1,10 +1,5 @@
 # netty架构概念说明
-## ChannelHandler 说明
-![](img/channelhandler.png)
-最重要的类层次结构如上，至于其他的Handler其实大部分是Adapt适配器，因为有了默认实现可以让我们少些代码，关注我们自己关注的方法即可。
 
-另外ChannelHandler本身对入站及出站数据 是按照Handler的类型按责任链模式挨个遍历的。如下图所示：
-![](img/channelh2.png)
 ## Channel说明
 先说一下Channel有多种类型，banding服务端口的ServerChannel,LocalServerChannel(jvm内部交互的)，NioSocketChannel(Socket通信的)等等。那么Channel除了这里说的具体实现外，人家还有什么重要的属性呢。如下图所示：
 ![](img/channel.png)
@@ -55,6 +50,14 @@ f.channel().closeFuture().sync();
 1：设置编码解码
 2：设置handlder
 Netty中的ChannelHandler主要由两种类型，ChannelInboundHandler和ChannelOutboundHandler
+
+### ChannelHandler 说明
+![](img/channelhandler.png)
+
+最重要的类层次结构如上，至于其他的Handler其实大部分是Adapt适配器，因为有了默认实现可以让我们少些代码，关注我们自己关注的方法即可。
+
+另外ChannelHandler本身对入站及出站数据 是按照Handler的类型按责任链模式挨个遍历的。如下图所示：
+![](img/channelh2.png)
 ###  ChannelInboundHandler
 当查询到Java NIO底层Channel的就绪事件时，通过一系列的ChannelInboundHandler处理器，完成底层就绪事件的处理。
 入站（inbound）处理通常由底层Java NIO channel触发，主要事件如下：
