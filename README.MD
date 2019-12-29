@@ -22,11 +22,11 @@ ChannelFutureListener实例。监听器的回调方法operationComplete()， 将
 f.channel().closeFuture().sync();
 
 即closeFuture()是开启了一个channel的监听器，负责监听channel是否关闭的状态，如果未来监听到channel关闭了，子线程才会释放，syncUninterruptibly()让主线程同步等待子线程结果。
-##serverBootstrap.group().childHandler
+##  serverBootstrap.group().childHandler
 1：设置编码解码
 2：设置handlder
 Netty中的ChannelHandler主要由两种类型，ChannelInboundHandler和ChannelOutboundHandler
-###ChannelInboundHandler
+###  ChannelInboundHandler
 当查询到Java NIO底层Channel的就绪事件时，通过一系列的ChannelInboundHandler处理器，完成底层就绪事件的处理。
 入站（inbound）处理通常由底层Java NIO channel触发，主要事件如下：
     
@@ -37,7 +37,7 @@ Netty中的ChannelHandler主要由两种类型，ChannelInboundHandler和Channel
     5. 用户自定义事件 fireUserEventTriggered。
     6. Channel 可写状态变化事件 fireChannelWritabilityChanged。
     7. 连接关闭事件 fireChannelInactive。
-###ChannelOutboundHandler
+###  ChannelOutboundHandler
 当需要Netty Channel需要操作Java NIO底层Channel时，通过一系列的ChannelOutboundHandler处理器，完成底层操作。主要操作如下：
 
     1. 端口绑定bind。
