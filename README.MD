@@ -1,15 +1,13 @@
 # netty架构概念说明
 ## ChannelHandler 说明
-![5b2d4abfbb6eaca9e82b8f62884ce236.png](en-resource://database/409:1)
-
+![](img/channelhandler.png)
 最重要的类层次结构如上，至于其他的Handler其实大部分是Adapt适配器，因为有了默认实现可以让我们少些代码，关注我们自己关注的方法即可。
 
 另外ChannelHandler本身对入站及出站数据 是按照Handler的类型按责任链模式挨个遍历的。如下图所示：
-![ad3e595b4bb090b017de1da422fdf3f3.png](en-resource://database/411:1)
-
+![](img/channelh2.png)
 ## Channel说明
 先说一下Channel有多种类型，banding服务端口的ServerChannel,LocalServerChannel(jvm内部交互的)，NioSocketChannel(Socket通信的)等等。那么Channel除了这里说的具体实现外，人家还有什么重要的属性呢。如下图所示：
-![](img/channelhandler.png)
+![](img/channel.png)
 每个Channel都持有一个Config(配置)，还有一个就是ChannelPipleLine（用于处理Channel内部传输的数据Handler链表）。
 
 ## ChannelHandler与ChannelPipeLine
