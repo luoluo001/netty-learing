@@ -48,7 +48,10 @@ public class CharRoomClent {
             Channel channel = future.channel();
             BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
             while(true){
-                channel.writeAndFlush(in.readLine() + "\r\n");
+                String writeLine = in.readLine();
+                if (channel.isWritable()) {
+                    channel.writeAndFlush(writeLine + "\r\n");
+                }
             }
 
          //   channel.closeFuture().sync();//阻塞直到channel关闭
