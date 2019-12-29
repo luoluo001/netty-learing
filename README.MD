@@ -1,3 +1,35 @@
+# netty架构概念说明
+## ChannelHandler 说明
+![5b2d4abfbb6eaca9e82b8f62884ce236.png](en-resource://database/409:1)
+
+最重要的类层次结构如上，至于其他的Handler其实大部分是Adapt适配器，因为有了默认实现可以让我们少些代码，关注我们自己关注的方法即可。
+
+另外ChannelHandler本身对入站及出站数据 是按照Handler的类型按责任链模式挨个遍历的。如下图所示：
+![ad3e595b4bb090b017de1da422fdf3f3.png](en-resource://database/411:1)
+
+## Channel说明
+先说一下Channel有多种类型，banding服务端口的ServerChannel,LocalServerChannel(jvm内部交互的)，NioSocketChannel(Socket通信的)等等。那么Channel除了这里说的具体实现外，人家还有什么重要的属性呢。如下图所示：
+<img src="https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/logo/logo-simple.png" alt="pig" >
+每个Channel都持有一个Config(配置)，还有一个就是ChannelPipleLine（用于处理Channel内部传输的数据Handler链表）。
+
+## ChannelHandler与ChannelPipeLine
+ChannelPipeline持有ChannelHandler列表，以责任链的模
+ChannelHandler 入站从头到尾（？ extends ChannelInboundHandler），出站是从尾到头(? extends ChannelOutboundHandler)，而且事件传递是与事件相关的，如果是入站的那么只会传递个ChannelInBoundHandler的相关实现Handler，出站同理。
+## ChannelHandlerContext与ChannelPipeline Channel之间的关系
+其实是ChanelPipeLine每次添加ChannelHandler就会创建一个ChannelHandlerContext，context与ChannelHandler是一对一的banding关系。当然可以理解为ChannelHandlerContext是ChannelPipeline和Channel的桥梁（即Channel与Handler之间做关联），context操作事件会传递给下一个ChannelHandler。（后续在看）。
+## EventLoop(暂时还没看相关的内容？)
+EventLoop对注册到之上的Channel的整个生命周期的Io事件负责。
+另我们知道Future是线程结果的占位符，那么ChannelFuture就是执行操作结果的占位符，两者的共同点都是异步的，但是ChannelFuture的结果是通过监听器进行回调的。
+Channel ChannelHandler ChannelHandlerPipleline 
+
+ChanelHandler的类结构 主要是适配器来减少代码的编写。因为有默认的实现可以让你关注与你需要关注的事件上。
+
+## 引导器
+|引导器类型|说明
+|--|--
+|BootStrap|客户端引导器 旨在连接远程服务商
+|ServerBootStrap|服务端引导器 用于绑定本地端口 并接受远程客户端请求
+
 # netty api 解析
 Netty的线程模型
 　　Netty的线程模型并不是一成不变的，它实际取决于用户的启动参数配置。Netty的多线程编程最佳实践如下
