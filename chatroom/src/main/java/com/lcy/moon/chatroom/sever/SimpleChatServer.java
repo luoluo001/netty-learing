@@ -15,7 +15,8 @@ public class SimpleChatServer {
     }
 
     public void run() throws Exception {
-
+        //创建两个NioEventLoopGroup，用于逻辑隔离NIO Acceptor和NIO I/O线程
+       //EventLoopGroup就是一个线程池实现 extends ScheduledExecutorService
         EventLoopGroup bossGroup = new NioEventLoopGroup(); // (1)
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {

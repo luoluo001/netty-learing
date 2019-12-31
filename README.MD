@@ -1,4 +1,89 @@
 # netty架构概念说明
+## Bytebuf说明
+Netty 提供了ByteBuf，来替代Java NIO的 ByteBuffer ，来操纵内存缓冲区。
+### java ByteBuffer 局限性如下
+
+    1:ByteBuffer 长度固定，一旦分配完成,它的容量不能动态扩展和伸缩,当需要编码的POJO 对象大于ByteBuffer 的容量时，会发生索引越界异常
+    2:ByteBuffer 只有一个标识位置的指针position,读写的时候需要手动调用flip()和rewind() 等，使用者必要小心谨慎的处理这些API,否则很容易导致程序处理失败
+###  与Java NIO的 ByteBuffer 相比，ByteBuf的优势如下：
+
+    1:Pooling (池化，这点减少了内存复制和GC，提升效率)
+    2:可以自定义缓冲类型
+    3:通过一个内置的复合缓冲类型实现零拷贝
+    4:扩展性好，比如 StringBuffer
+    5:不需要调用 flip()来切换读/写模式
+    6:读取和写入索引分开
+    7:方法链
+    8:引用计数
+###  ByteBuf的使用模式
+ByteBuf维护两个不同的索引: 读索引(readerIndex)和写索引(writerIndex)。如下图: 
+![](img/bytebuf_index.png)
+
+    1:ByteBuf维护了readerIndex和writerIndex索引,当readerIndex > writerIndex时，则抛出IndexOutOfBoundsException
+    2:ByteBuf容量 = writerIndex。
+    3:ByteBuf可读容量 = writerIndex - readerIndex
+    4:readXXX()和writeXXX()方法将会推进其对应的索引。自动推进
+    5:getXXX()和setXXX()方法将对writerIndex和readerIndex无影响
+
+### ByteBuf的使用模式
+ByteBuf本质是: 一个由不同的索引分别控制读访问和写访问的字节数组。请记住这句话。ByteBuf共有三种模式: 堆缓冲区模式(Heap Buffer)、直接缓冲区模式(Direct Buffer)和复合缓冲区模式(Composite Buffer)
+1. 堆缓冲区模式(Heap Buffer)
+
+堆缓冲区模式又称为：支撑数组(backing array)。将数据存放在JVM的堆空间，通过将数据存储在数组中实现
+
+堆缓冲的优点: 由于数据存储在Jvm堆中可以快速创建和快速释放，并且提供了数组直接快速访问的方法
+堆缓冲的缺点: 每次数据与I/O进行传输时，都需要将数据拷贝到直接缓冲区
+代码:
+
+    public static void heapBuffer() {
+    // 创建Java堆缓冲区
+    ByteBuf heapBuf = Unpooled.buffer(); 
+    if (heapBuf.hasArray()) { // 是数组支撑
+        byte[] array = heapBuf.array();
+        int offset = heapBuf.arrayOffset() + heapBuf.readerIndex();
+        int length = heapBuf.readableBytes();
+        handleArray(array, offset, length);
+    }
+### 直接缓冲区模式(Direct Buffer)
+
+Direct Buffer属于堆外分配的直接内存，不会占用堆的容量。适用于套接字传输过程，避免了数据从内部缓冲区拷贝到直接缓冲区的过程，性能较好
+
+Direct Buffer的优点: 使用Socket传递数据时性能很好，避免了数据从Jvm堆内存拷贝到直接缓冲区的过程。提高了性能
+
+Direct Buffer的缺点: 相对于堆缓冲区而言，Direct Buffer分配内存空间和释放更为昂贵
+对于涉及大量I/O的数据读写，建议使用Direct Buffer。而对于用于后端的业务消息编解码模块建议使用Heap Buffer
+代码:
+
+    public static void directBuffer() {
+    ByteBuf directBuf = Unpooled.directBuffer();
+    if (!directBuf.hasArray()) {
+        int length = directBuf.readableBytes();
+        byte[] array = new byte[length];
+        directBuf.getBytes(directBuf.readerIndex(), array);
+        handleArray(array, 0, length);
+    }
+    }
+### 复合缓冲区模式(Composite Buffer)
+
+Composite Buffer是Netty特有的缓冲区。本质上类似于提供一个或多个ByteBuf的组合视图，可以根据需要添加和删除不同类型的ByteBuf。
+
+想要理解Composite Buffer，请记住：它是一个组合视图。它提供一种访问方式让使用者自由的组合多个ByteBuf，避免了拷贝和分配新的缓冲区。
+Composite Buffer不支持访问其支撑数组。因此如果要访问，需要先将内容拷贝到堆内存中，再进行访问
+
+代码:
+
+     public static void byteBufComposite() {
+    // 复合缓冲区，只是提供一个视图
+    CompositeByteBuf messageBuf = Unpooled.compositeBuffer();
+    ByteBuf headerBuf = Unpooled.buffer(); // can be backing or direct
+    ByteBuf bodyBuf = Unpooled.directBuffer();   // can be backing or direct
+    messageBuf.addComponents(headerBuf, bodyBuf);
+    messageBuf.removeComponent(0); // remove the header
+    for (ByteBuf buf : messageBuf) {
+        System.out.println(buf.toString());
+    }
+    }
+
 
 ## Channel说明
 先说一下Channel有多种类型，banding服务端口的ServerChannel,LocalServerChannel(jvm内部交互的)，NioSocketChannel(Socket通信的)等等。那么Channel除了这里说的具体实现外，人家还有什么重要的属性呢。如下图所示：
