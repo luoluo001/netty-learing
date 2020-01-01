@@ -25,7 +25,7 @@ ByteBuf维护两个不同的索引: 读索引(readerIndex)和写索引(writerInd
     4:readXXX()和writeXXX()方法将会推进其对应的索引。自动推进
     5:getXXX()和setXXX()方法将对writerIndex和readerIndex无影响
 
-### ByteBuf的使用模式
+### ByteBuf的缓冲区模式
 ByteBuf本质是: 一个由不同的索引分别控制读访问和写访问的字节数组。请记住这句话。ByteBuf共有三种模式: 堆缓冲区模式(Heap Buffer)、直接缓冲区模式(Direct Buffer)和复合缓冲区模式(Composite Buffer)
 1. 堆缓冲区模式(Heap Buffer)
 
