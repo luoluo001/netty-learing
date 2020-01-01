@@ -102,9 +102,9 @@ Composite Buffer不支持访问其支撑数组。因此如果要访问，需要�
 discardbytes操作则可以重用已经读过的空间，减少扩容的次数。
 
 但是，discardbytes操作本身也是自己数组的内存复制，所以频繁调用也会导致性能下降，因此调用之前，请确认，你想要时间换取空间，而不是扩容。
-###Clear 操作
+###  Clear 操作
 clear 操作并不会清空缓冲区内容本身,它主要操作位置指针，例如posttion,limit,marK,对于bytebuf,他也是用来操作readindex和writeindex
-###mark 和rest
+###  mark 和rest
 调用mark 操作会将当前指针（读指针和写指针）变量备份到mark 变量中(mark=position)，当调用rest 操作之后，重新将指针的当前恢复为备份在mark中的值
 ## Channel说明
 先说一下Channel有多种类型，banding服务端口的ServerChannel,LocalServerChannel(jvm内部交互的)，NioSocketChannel(Socket通信的)等等。那么Channel除了这里说的具体实现外，人家还有什么重要的属性呢。如下图所示：
