@@ -69,7 +69,7 @@ Composite Buffer是Netty特有的缓冲区。本质上类似于提供一个或�
 
 想要理解Composite Buffer，请记住：它是一个组合视图。它提供一种访问方式让使用者自由的组合多个ByteBuf，避免了拷贝和分配新的缓冲区。
 Composite Buffer不支持访问其支撑数组。因此如果要访问，需要先将内容拷贝到堆内存中，再进行访问
-
+适用场景：比如http请求除了body之外，人家还有header信息，而header信息本身不怎么变。这个时候就可以用这个CompositeBuffer。header部分不发生变更，body部分可以反复读写。
 代码:
 
      public static void byteBufComposite() {
@@ -106,6 +106,12 @@ discardbytes操作则可以重用已经读过的空间，减少扩容的次数�
 clear 操作并不会清空缓冲区内容本身,它主要操作位置指针，例如posttion,limit,marK,对于bytebuf,他也是用来操作readindex和writeindex
 ###  mark 和rest
 调用mark 操作会将当前指针（读指针和写指针）变量备份到mark 变量中(mark=position)，当调用rest 操作之后，重新将指针的当前恢复为备份在mark中的值
+### 关于池化
+ByteBuf在使用的时候池化的原理就跟线程池，jdbc连接池一样,而这里的内存池化其实就是通过
+引用计数法，来完成释放（放回池中）。
+主要涉及API
+UnpooledByteBufAllocator、PooledByteBufAllocator 前者是不使用池化，后者使用来完成相关类型ByteBuf创建。
+
 ## Channel说明
 先说一下Channel有多种类型，banding服务端口的ServerChannel,LocalServerChannel(jvm内部交互的)，NioSocketChannel(Socket通信的)等等。那么Channel除了这里说的具体实现外，人家还有什么重要的属性呢。如下图所示：
 ![](img/channel.png)
